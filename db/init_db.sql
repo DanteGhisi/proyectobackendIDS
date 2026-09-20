@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `canchas`
 --
 
-CREATE TABLE `canchas` (
+CREATE TABLE IF NOT EXISTS `canchas` (
   `cancha_id` int(11) NOT NULL,
   `deporte_id` int(11) DEFAULT NULL,
   `nombre` varchar(50) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE `canchas` (
 -- Estructura de tabla para la tabla `deportes`
 --
 
-CREATE TABLE `deportes` (
+CREATE TABLE IF NOT EXISTS `deportes` (
   `deporte_id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -53,7 +53,7 @@ CREATE TABLE `deportes` (
 -- Estructura de tabla para la tabla `reservas`
 --
 
-CREATE TABLE `reservas` (
+CREATE TABLE IF NOT EXISTS `reservas` (
   `reserva_id` int(11) NOT NULL,
   `socio_id` int(11) DEFAULT NULL,
   `cancha_id` int(11) DEFAULT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE `reservas` (
 -- Estructura de tabla para la tabla `socios`
 --
 
-CREATE TABLE `socios` (
+CREATE TABLE IF NOT EXISTS `socios` (
   `socio_id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `apellido` varchar(50) NOT NULL,
