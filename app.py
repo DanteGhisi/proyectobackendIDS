@@ -1,11 +1,11 @@
 from flask import Flask
-
-from src.routes.deportes_routes import register_deportes_routes
 from src.routes.canchas_routes import register_canchas_routes
-from src.routes.socios_routes import register_socios_routes
+from src.routes.deportes_routes import register_deportes_routes
 from src.routes.reservas_routes import register_reservas_routes
+from src.routes.socios_routes import register_socios_routes
 
 app = Flask(__name__)
+app.json.ensure_ascii = False
 
 
 @app.route("/", methods=["GET"])
