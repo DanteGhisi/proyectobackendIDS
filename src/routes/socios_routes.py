@@ -1,20 +1,30 @@
 def register_socios_routes(app):
-    @app.route('/socios', methods=['GET'])
+    @app.route("/socios", methods=["GET"])
     def get_socios():
+        # Listar socios con paginación. Filtros opcionales: nombre y activo.
+        # Página 6
         pass
 
-    @app.route('/socios/<int:id>', methods=['GET'])
-    def get_socio(id):
-        pass
-
-    @app.route('/socios', methods=['POST'])
+    @app.route("/socios", methods=["POST"])
     def create_socio():
+        # Registrar un socio con nombre y email, ambos obligatorios.
+        #     • El servidor asignará activo: true.
+        #     • El nombre no podrá quedar vacío.
+        #     • El correo deberá tener un formato válido y almacenarse en minúsculas, sin espacios en sus extremos.
+        #     • Un correo ya registrado producirá 409, incluso si el socio existente está inactivo.
+        #     Página 6
         pass
 
-    @app.route('/socios/<int:id>', methods=['PUT'])
+    @app.route("/socios/<int:id>", methods=["GET"])
+    def get_socio(id):
+        # Consultar los datos de un socio.
+        # Página 6
+        pass
+
+    @app.route("/socios/<int:id>", methods=["PATCH"])
     def update_socio(id):
-        pass
-
-    @app.route('/socios/<int:id>', methods=['DELETE'])
-    def delete_socio(id):
+        # Actualizar parcialmente nombre, email o activo, respetando las validaciones del alta y la unicidad del correo.
+        #     • Los campos omitidos conservarán su valor.
+        #     • No se requiere un endpoint de eliminación de socios.
+        #     Página 6
         pass

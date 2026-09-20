@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask
 
 from src.routes.deportes_routes import register_deportes_routes
 from src.routes.canchas_routes import register_canchas_routes
@@ -6,8 +6,6 @@ from src.routes.socios_routes import register_socios_routes
 from src.routes.reservas_routes import register_reservas_routes
 
 app = Flask(__name__)
-
-BACKEND_URL = "http://localhost:5000"
 
 
 @app.route("/", methods=["GET"])
