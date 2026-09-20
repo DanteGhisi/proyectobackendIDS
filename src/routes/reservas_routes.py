@@ -1,10 +1,20 @@
-from flask import Blueprint
-from controllers.reservas_controllers import *
+def register_reservas_routes(app):
+    @app.route('/reservas', methods=['GET'])
+    def get_reservas():
+        pass
 
-reservas_bp = Blueprint('reservas_bp', __name__)
+    @app.route('/reservas/<int:id>', methods=['GET'])
+    def get_reserva(id):
+        pass
 
-reservas_bp.route('/reservas', methods=['METHOD'])(reservas)
-reservas_bp.route('/reservas/<int:id>', methods=['METHOD'])(reservas)
-reservas_bp.route('/reservas', methods=['METHOD'])(reservas)
-reservas_bp.route('/reservas/<int:id>', methods=['METHOD'])(reservas)
-reservas_bp.route('/reservas/<int:id>', methods=['METHOD'])(reservas)
+    @app.route('/reservas', methods=['POST'])
+    def create_reserva():
+        pass
+
+    @app.route('/reservas/<int:id>', methods=['PUT'])
+    def update_reserva(id):
+        pass
+
+    @app.route('/reservas/<int:id>', methods=['DELETE'])
+    def delete_reserva(id):
+        pass

@@ -1,10 +1,20 @@
-from flask import Blueprint
-from controllers.socios_controllers import *
+def register_socios_routes(app):
+    @app.route('/socios', methods=['GET'])
+    def get_socios():
+        pass
 
-socios_bp = Blueprint('socios_bp', __name__)
+    @app.route('/socios/<int:id>', methods=['GET'])
+    def get_socio(id):
+        pass
 
-socios_bp.route('/socios', methods=['METHOD'])(socios)
-socios_bp.route('/socios/<int:id>', methods=['METHOD'])(socios)
-socios_bp.route('/socios', methods=['METHOD'])(socios)
-socios_bp.route('/socios/<int:id>', methods=['METHOD'])(socios)
-socios_bp.route('/socios/<int:id>', methods=['METHOD'])(socios)
+    @app.route('/socios', methods=['POST'])
+    def create_socio():
+        pass
+
+    @app.route('/socios/<int:id>', methods=['PUT'])
+    def update_socio(id):
+        pass
+
+    @app.route('/socios/<int:id>', methods=['DELETE'])
+    def delete_socio(id):
+        pass
