@@ -4,9 +4,9 @@ from .constants import DB_URL
 
 def obtener_conexion():
     """Crea y retorna una nueva conexion a la base de datos."""
-    motor = create_engine(DB_URL)
+    engine = create_engine(DB_URL)
 
-    return motor.connect()
+    return engine.connect()
 
 
 def fila_a_dict(fila) -> dict:
