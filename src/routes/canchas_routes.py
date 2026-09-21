@@ -1,6 +1,9 @@
 def register_canchas_routes(app):
+
+    
     @app.route("/canchas", methods=["GET"])
     def get_canchas():
+        listarejecutar_consulta()
         # Listar las canchas con paginación.
         #     • Filtros opcionales: id_deporte, nombre, techada y activa.
         #     • Sin filtros se incluirán tanto las canchas activas como las inactivas.

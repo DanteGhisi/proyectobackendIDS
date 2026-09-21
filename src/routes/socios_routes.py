@@ -47,3 +47,4 @@ def register_socios_routes(app):
         #     • No se requiere un endpoint de eliminación de socios.
         #     Página 6
         pass
+

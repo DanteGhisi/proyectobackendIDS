@@ -7,12 +7,6 @@ from src.routes.socios_routes import register_socios_routes
 app = Flask(__name__)
 app.json.ensure_ascii = False
 
-
-@app.route("/", methods=["GET"])
-def saludar():
-    return {"mensaje": "hola mundo"}
-
-
 # Registro de rutas modulares
 register_deportes_routes(app)
 register_canchas_routes(app)
