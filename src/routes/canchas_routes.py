@@ -1,14 +1,17 @@
+from flask import jsonify
+#from src.services.canchas_services import (listar_canchas)
+
 def register_canchas_routes(app):
 
     
     @app.route("/canchas", methods=["GET"])
     def get_canchas():
-        listarejecutar_consulta()
-        # Listar las canchas con paginación.
-        #     • Filtros opcionales: id_deporte, nombre, techada y activa.
-        #     • Sin filtros se incluirán tanto las canchas activas como las inactivas.
-        #     Página 4
-        pass
+        def listar_canchas() -> [dict]:
+            query = "SELECT id, nombre FROM canchas ORDER BY id ASC"
+
+        resultado = listar_canchas()
+        return jsonify(resultado), 200
+
 
     @app.route("/canchas", methods=["POST"])
     def create_cancha():
