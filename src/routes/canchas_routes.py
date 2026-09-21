@@ -15,13 +15,11 @@ def register_canchas_routes(app):
 
     @app.route("/canchas", methods=["POST"])
     def create_cancha():
-        # Crear una cancha.
-        #     • Campos obligatorios: nombre, id_deporte y precio_hora.
-        #     • Campos opcionales: techada, con valor predeterminado false, y activa, con valor predeterminado true.
-        #     • El nombre no podrá quedar vacío después de quitar espacios en sus extremos.
-        #     • El deporte deberá existir y el precio deberá ser un entero positivo.
-        #     Página 5
-        pass
+        def crear_cancha():
+            query = "INSERT INTO canchas (nombre, id_deporte, precio_hora, techada, activa) VALUES (%s, %s, %s, %s, %s)"
+        
+        resultado = crear_cancha()
+        return jsonify(resultado), 201
 
     @app.route("/canchas/disponibles", methods=["GET"])
     def get_canchas_disponibles():
@@ -43,13 +41,20 @@ def register_canchas_routes(app):
 
     @app.route("/canchas/<int:id>", methods=["PATCH"])
     def update_cancha(id):
-        # Actualizar parcialmente una cancha.
-        #     • Campos editables: nombre, precio_hora, techada y activa.
-        #     • Los campos omitidos conservarán su valor y se aplicarán las validaciones del alta.
-        #     • El deporte asociado no se modificará una vez creada la cancha.
-        #     • Cambiar el precio no alterará los importes de reservas existentes.
-        #     Página 5
-        pass
+        def actualizar_cancha(id):
+        datos = request.get_json()
+        if datos is None:
+            return jsonify({"Error" : "El cuerpo de la solicitud debe ser un Json valido"})
+        try:
+            cancha_actualizada = cancha_service.actualizar_cancha(id, datos)
+            return jsonify(cancha_actualizada), 200
+        except ValueError as Error :
+            mensaje = str(Error)
+        if "no existe" in mensaje.lower() : 
+            return jsonify({"Error" : mensaje}), 404
+        return jsonify({"Error" : mensaje}), 400
+        except Exception as Error:
+            return jsonify({"Error" : f"Error interno del servidor: {str(Error)}"}), 500
 
     @app.route("/canchas/<int:id>", methods=["DELETE"])
     def delete_cancha(id):
