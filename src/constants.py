@@ -12,3 +12,6 @@ DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "admin")
 DB_NAME = os.getenv("DB_NAME", "club_deportivo_db")
 DB_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
+
+# Constantes útiles
+FORMATO_FECHA_ISO = "%Y-%m-%dT%H:%M:%S.%f-03:00"
