@@ -1,3 +1,9 @@
+from flask import jsonify, request
+
+from src.services.reservas_services import listar_reservas
+from src.validators.reservas_validator import validar_paginacion
+
+
 def register_reservas_routes(app):
     @app.route("/reservas", methods=["GET"])
     def get_reservas():
@@ -7,7 +13,15 @@ def register_reservas_routes(app):
         #     • Podrá enviarse un solo extremo; si se envían ambos, deberá cumplirse fecha_desde <= fecha_hasta.
         #     • Se permitirá consultar reservas pasadas.
         #     Página 6
-        pass
+
+        limit, offset = validar_paginacion(request.args)
+
+        resultado = listar_reservas(limit, offset)
+
+        if not resultado["reservas"]:
+            return "", 204
+
+        return jsonify(resultado), 200
 
     @app.route("/reservas", methods=["POST"])
     def create_reserva():
