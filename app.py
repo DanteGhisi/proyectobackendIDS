@@ -3,7 +3,7 @@ from src.routes.canchas_routes import register_canchas_routes
 from src.routes.deportes_routes import register_deportes_routes
 from src.routes.reservas_routes import register_reservas_routes
 from src.routes.socios_routes import register_socios_routes
-from src.utils import ApiError, construir_error_api
+from src.utils import construir_error_api
 from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
@@ -32,10 +32,11 @@ def handle_unexpected_error(error):
     ), 500
 
 
-# Manejo de error ApiError
-@app.errorhandler(ApiError)
-def handle_api_error(error):
-    return jsonify(error.payload), error.status_code
+# Manejo de error de validación (ValueError estándar)
+@app.errorhandler(ValueError)
+def handle_value_error(error):
+    status = error.args[1] if len(error.args) > 1 else 400
+    return jsonify(error.args[0]), status
 
 
 # Registro de rutas modulares
