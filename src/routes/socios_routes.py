@@ -1,4 +1,8 @@
 from flask import jsonify, request
+from src.services.socios_services import (
+    registrar_nuevo_socio,
+    EmailDuplicadoError,
+)
 # from src.services.socios_services import (
 #     obtener_todos_los_socios,
 #     buscar_socio_por_id,
@@ -33,7 +37,15 @@ def register_socios_routes(app):
         #     • El correo deberá tener un formato válido y almacenarse en minúsculas, sin espacios en sus extremos.
         #     • Un correo ya registrado producirá 409, incluso si el socio existente está inactivo.
         #     Página 6
-        pass
+        datos = request.get_json()
+        try:
+            socio = registrar_nuevo_socio(datos)
+            return jsonify(socio), 201
+        except EmailDuplicadoError as error:
+            return jsonify({"error": str(error)}), 409
+        except ValueError as error:
+            return jsonify({"error": str(error)}), 400
+        
 
     @app.route("/socios/<int:id>", methods=["GET"])
     def get_socio(id):
