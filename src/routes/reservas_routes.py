@@ -1,7 +1,8 @@
 from flask import jsonify, request
 
-from src.services.reservas_services import listar_reservas
-from src.validators.reservas_validator import validar_paginacion
+from src.services.reservas_services import actualizar_estado_reserva, listar_reservas
+from src.validators.reservas_validator import validar_paginacion 
+from src.utils import construir_error_api
 
 
 def register_reservas_routes(app):
@@ -43,9 +44,36 @@ def register_reservas_routes(app):
 
     @app.route("/reservas/<int:id>/estado", methods=["PUT"])
     def update_estado_reserva(id):
-        # Establecer el estado de una reserva respetando las transiciones y restricciones temporales de la sección 3.
-        #     • Un estado desconocido producirá 400.
-        #     • Una transición no permitida, o solicitada fuera del momento permitido, producirá 409.
-        #     • La respuesta exitosa incluirá la reserva con su estado actual.
-        #     Página 7
-        pass
+        datos = request.get_json(silent=True)
+
+        if not isinstance(datos, dict) or "estado" not in datos:
+            return construir_error_api(
+                "ERROR_VALIDACION",
+                "El cuerpo de la solicitud es inválido",
+                "Debe enviar el campo 'estado' en un JSON válido.",
+            ), 400
+
+        estado = datos["estado"]
+        estados_validos = {"confirmada", "cancelada", "finalizada"}
+
+        if not isinstance(estado, str) or estado not in estados_validos:
+            return construir_error_api(
+                "ERROR_VALIDACION",
+                "El cuerpo de la solicitud es inválido",
+                "El estado debe ser confirmada, cancelada o finalizada.",
+            ), 400
+
+        try:
+            actualizar_estado_reserva(id, estado)
+            return "", 204
+        except LookupError as error:
+            return construir_error_api(
+                "ERROR_NO_ENCONTRADO", "Recurso no encontrado", str(error)
+            ), 404
+        except ValueError as error:
+            return construir_error_api(
+                "ERROR_CONFLICTO",
+                "Conflicto con el estado de la reserva",
+                str(error),
+            ), 409
+
