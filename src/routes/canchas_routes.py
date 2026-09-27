@@ -67,15 +67,32 @@ def register_canchas_routes(app):
 
     @app.route("/canchas/disponibles", methods=["GET"])
     def get_canchas_disponibles():
-        # Consultar canchas activas libres durante todo un intervalo.
-        #     • Parámetros obligatorios: fecha, hora_inicio y hora_fin.
-        #     • Filtros opcionales: id_deporte y techada.
-        #     • El resultado tendrá paginación.
-        #     • El intervalo deberá cumplir las mismas reglas de fecha, horario y duración que una reserva nueva.
-        #     • Si no hay canchas libres, responder 200 con un arreglo vacío.
-        #     • Esta consulta informa disponibilidad de las canchas. La habilitación y la agenda del socio se validarán al crear la reserva.
-        #     Página 5
-        pass
+        cancha = canchas_repository.get_by_id(id)
+        if not cancha:
+            return jsonify({"error": f"No existe la cancha con ID {id}"}), 404
+        fecha = request.args.get("fecha")
+        hora_inicio = request.args.get("hora_inicio")
+        hora_fin = request.args.get("hora_fin")
+        if not fecha or not hora_inicio or not hora_fin:
+        return jsonify({
+            "error": "Debe enviar los parámetros 'fecha', 'hora_inicio' y 'hora_fin' en la URL."
+        }), 400
+        if hora_inicio >= hora_fin:
+            return jsonify({
+                "error": "La 'hora_inicio' debe ser menor que la 'hora_fin'."
+            }), 400
+        try:
+            disponible = canchas_repository.check_disponibilidad(id, fecha, hora_inicio, hora_fin)
+            return jsonify({
+                "cancha_id": id,
+                "fecha": fecha,
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "disponible": disponible
+            }), 200
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+            pass
 
     @app.route("/canchas/<int:id>", methods=["GET"])
     def get_cancha(id):
