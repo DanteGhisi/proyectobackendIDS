@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from src.db import ejecutar_consulta, ejecutar_mutacion, fila_a_dict
-#from src.services.canchas_services import (listar_canchas)
+from src.services.canchas_services import (buscar_cancha_por_id, eliminar_cancha)
+from src.repositories import canchas_repository
+
 
 def register_canchas_routes(app):
 
@@ -74,9 +76,9 @@ def register_canchas_routes(app):
         hora_inicio = request.args.get("hora_inicio")
         hora_fin = request.args.get("hora_fin")
         if not fecha or not hora_inicio or not hora_fin:
-        return jsonify({
-            "error": "Debe enviar los parámetros 'fecha', 'hora_inicio' y 'hora_fin' en la URL."
-        }), 400
+            return jsonify({
+                "error": "Debe enviar los parámetros 'fecha', 'hora_inicio' y 'hora_fin' en la URL."
+            }), 400
         if hora_inicio >= hora_fin:
             return jsonify({
                 "error": "La 'hora_inicio' debe ser menor que la 'hora_fin'."
@@ -96,9 +98,15 @@ def register_canchas_routes(app):
 
     @app.route("/canchas/<int:id>", methods=["GET"])
     def get_cancha(id):
-        # Obtener los datos de una cancha. Su estado activa no indica que esté libre en todos los horarios.
-        # Página 5
-        pass
+        try:
+            cancha = buscar_cancha_por_id(id)
+            return jsonify(cancha), 200
+        except ValueError as error:
+            mensaje = str(error)
+            if "no existe" in mensaje.lower():
+                return jsonify({"error": mensaje}), 404
+            return jsonify({"error": mensaje}), 400
+
 
     @app.route("/canchas/<int:id>", methods=["PATCH"])
     def update_cancha(id):
@@ -161,4 +169,13 @@ def register_canchas_routes(app):
         #     • Si tiene reservas, responder 409; podrá desactivarse mediante PATCH.
         #     • La eliminación exitosa responderá 204, sin cuerpo.
         #     Página 5
-        pass
+        try:
+            eliminar_cancha(id)
+            return "", 204
+
+
+        except ValueError as error:
+            mensaje = str(error)
+            if "tiene reservas" in mensaje.lower():
+                return jsonify({"error": mensaje}), 409
+            return jsonify({"error": mensaje}), 404
