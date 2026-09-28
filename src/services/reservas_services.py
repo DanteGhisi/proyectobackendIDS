@@ -44,16 +44,6 @@ def listar_reservas(filtros: dict) -> dict:
 
 
 def obtener_reserva_por_id_servicio(id: int) -> dict:
-    if id <= 0:
-        raise ValueError(
-            construir_error_api(
-                code="invalid.id.value",
-                message="ID inválido",
-                description="El ID de la reserva debe ser un número entero positivo",
-            ),
-            400,
-        )
-
     reserva = obtener_reserva_por_id(id)
     if reserva is None:
         raise ValueError(
@@ -158,16 +148,6 @@ def crear_reserva(datos: dict) -> int:
 
 
 def actualizar_estado_reserva(id: int, estado: str) -> None:
-    if id <= 0:
-        raise ValueError(
-            construir_error_api(
-                code="invalid.id.value",
-                message="ID inválido",
-                description="El ID de la reserva debe ser un número entero positivo",
-            ),
-            400,
-        )
-
     reserva = obtener_reserva_por_id(id)
     if reserva is None:
         raise ValueError(

@@ -12,16 +12,6 @@ from src.repositories.deportes_repository import existe_deporte_por_id_db
 
 
 def buscar_cancha_por_id(id: int) -> dict:
-    if id <= 0:
-        raise ValueError(
-            construir_error_api(
-                code="invalid.id.value",
-                message="ID inválido",
-                description="El ID de la cancha debe ser un número entero positivo",
-            ),
-            400,
-        )
-
     cancha = buscar_cancha_por_id_db(id)
     if cancha is None:
         raise ValueError(
@@ -37,16 +27,6 @@ def buscar_cancha_por_id(id: int) -> dict:
 
 
 def eliminar_cancha(id: int):
-    if id <= 0:
-        raise ValueError(
-            construir_error_api(
-                code="invalid.id.value",
-                message="ID inválido",
-                description="El ID de la cancha debe ser un número entero positivo",
-            ),
-            400,
-        )
-
     cancha = buscar_cancha_por_id_db(id)
     if cancha is None:
         raise ValueError(
@@ -103,16 +83,6 @@ def listar_canchas(filtros: dict) -> list[dict]:
 
 
 def actualizar_cancha(id: int, datos: dict) -> None:
-    if id <= 0:
-        raise ValueError(
-            construir_error_api(
-                code="invalid.id.value",
-                message="ID inválido",
-                description="El ID de la cancha debe ser un número entero positivo",
-            ),
-            400,
-        )
-
     cancha = buscar_cancha_por_id_db(id)
     if cancha is None:
         raise ValueError(
