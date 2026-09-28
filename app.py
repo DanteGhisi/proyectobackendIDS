@@ -8,6 +8,8 @@ from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
 app.json.ensure_ascii = False
+app.json.sort_keys = False
+
 
 
 # Manejador de error general

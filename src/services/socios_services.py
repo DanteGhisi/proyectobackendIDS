@@ -1,98 +1,97 @@
+from src.utils import construir_error_api
 from src.repositories.socios_repository import (
     existe_socio_con_email,
     insertar_socio,
     obtener_todos_los_socios_db,
     buscar_socio_por_id_db,
     actualizar_socio_db,
+    existe_otro_socio_con_email_db,
 )
-from src.db import ejecutar_consulta
-import re
 
-PATRON_EMAIL = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
-def email_valido(email: str) -> bool:
-    return re.match(PATRON_EMAIL, email) is not None
+def obtener_todos_los_socios(filtros: dict):
+    return obtener_todos_los_socios_db(
+        nombre=filtros.get("nombre"),
+        activo=filtros.get("activo"),
+        limit=filtros.get("limit", 10),
+        offset=filtros.get("offset", 0),
+    )
 
-def registrar_nuevo_socio(datos: dict) -> dict:
-    if not isinstance(datos, dict):
-        raise ValueError("El cuerpo de la solicitud debe ser un JSON válido")
-        
-    nombre = datos.get("nombre")
-    email = datos.get("email")
 
-    if not nombre or not isinstance(nombre, str) or not nombre.strip():
-        raise ValueError("El nombre esta vacio")
-    
-    if not email or not isinstance(email, str):
-        raise ValueError("El email es obligatorio")
-
-    email = email.strip().lower()
-    if not email_valido(email):
-        raise ValueError("El email no tiene un formato válido")
-
-    if existe_socio_con_email(email):
-        raise ValueError("El email ya esta registrado")
-
-    id_socio = insertar_socio(nombre.strip(), email)
-    return buscar_socio_por_id_db(id_socio)
-
-def obtener_todos_los_socios(nombre=None, activo=None, limit=10, offset=0):
-    return obtener_todos_los_socios_db(nombre=nombre, activo=activo, limit=limit, offset=offset)
-
-def buscar_socio_por_id(id: int):
+def buscar_socio_por_id(id: int) -> dict:
     socio = buscar_socio_por_id_db(id)
     if not socio:
-        raise ValueError("El socio no existe")
-    return socio
+        raise ValueError(
+            construir_error_api(
+                code="not_found.socio",
+                message="Recurso no encontrado",
+                description=f"No existe el socio con ID {id}",
+            ),
+            404,
+        )
+
+    return {
+        "id": socio["id"],
+        "nombre": socio["nombre"],
+        "email": socio["email"],
+        "activo": socio["activo"],
+    }
+
+
+def registrar_nuevo_socio(datos: dict) -> dict:
+    email = datos["email"]
+    if existe_socio_con_email(email):
+        raise ValueError(
+            construir_error_api(
+                code="conflict.email.duplicate",
+                message="Conflicto con los datos",
+                description=f"El email '{email}' ya se encuentra registrado",
+            ),
+            409,
+        )
+
+    id_socio = insertar_socio(datos["nombre"], email)
+    return buscar_socio_por_id(id_socio)
+
 
 def modificar_socio(id: int, datos: dict) -> dict:
-    if not isinstance(datos, dict) or not datos:
-        raise ValueError("El cuerpo de la solicitud debe ser un JSON válido")
-
-    permitidos = {"nombre", "email", "activo"}
-    desconocidos = set(datos.keys()) - permitidos
-    if desconocidos:
-        raise ValueError(f"Campos desconocidos: {', '.join(sorted(desconocidos))}")
-
     socio_actual = buscar_socio_por_id_db(id)
     if not socio_actual:
-        raise ValueError("El socio no existe")
+        raise ValueError(
+            construir_error_api(
+                code="not_found.socio",
+                message="Recurso no encontrado",
+                description=f"No existe el socio con ID {id}",
+            ),
+            404,
+        )
 
     updates = []
     params = {"id": id}
 
     if "nombre" in datos:
-        nombre = datos["nombre"]
-        if not isinstance(nombre, str) or not nombre.strip():
-            raise ValueError("El nombre no puede estar vacío")
         updates.append("nombre = :nombre")
-        params["nombre"] = nombre.strip()
+        params["nombre"] = datos["nombre"]
 
     if "email" in datos:
         email = datos["email"]
-        if not isinstance(email, str):
-            raise ValueError("El email debe ser un texto")
-        
-        email = email.strip().lower()
-        if not email_valido(email):
-            raise ValueError("El email no tiene un formato válido")
-
-        duplicado = ejecutar_consulta("SELECT id FROM socios WHERE email = :email AND id != :id", {"email": email, "id": id})
-        if duplicado:
-            raise ValueError("El email ya esta registrado")
-
+        if existe_otro_socio_con_email_db(email, id):
+            raise ValueError(
+                construir_error_api(
+                    code="conflict.email.duplicate",
+                    message="Conflicto con los datos",
+                    description=f"El email '{email}' ya se encuentra registrado por otro socio",
+                ),
+                409,
+            )
         updates.append("email = :email")
         params["email"] = email
 
     if "activo" in datos:
-        activo = datos["activo"]
-        if not isinstance(activo, bool):
-            raise ValueError("El campo activo debe ser true o false")
         updates.append("activo = :activo")
-        params["activo"] = activo
+        params["activo"] = 1 if datos["activo"] else 0
 
-    if not updates:
-        raise ValueError("No se proporcionaron campos para actualizar")
+    if updates:
+        actualizar_socio_db(id, updates, params)
 
-    actualizar_socio_db(id, updates, params)
-    return buscar_socio_por_id_db(id)
+    return buscar_socio_por_id(id)

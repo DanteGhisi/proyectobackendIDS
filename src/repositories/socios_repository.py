@@ -66,3 +66,9 @@ def buscar_socio_por_id_db(id: int):
 def actualizar_socio_db(id: int, updates: list, params: dict):
     query = f"UPDATE socios SET {', '.join(updates)} WHERE id = :id"
     ejecutar_mutacion(query, params)
+
+
+def existe_otro_socio_con_email_db(email: str, id_socio: int) -> bool:
+    sql = "SELECT 1 FROM socios WHERE email = :email AND id != :id LIMIT 1"
+    resultado = ejecutar_consulta(sql, {"email": email, "id": id_socio})
+    return bool(resultado)
